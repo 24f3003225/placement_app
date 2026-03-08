@@ -1,0 +1,39 @@
+{% extends "index.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="container d-flex flex-column align-items-center">
+
+    <h3 class="mb-4 text-center">Pending Approvals</h3>
+
+    <div class="table-responsive" style="max-width: 1000px;">
+        <table class="table table-bordered text-center align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.user_type }}</td>
+                    <td>
+                        <a href="{{ url_for('approve', user_id=user.id) }}"
+                            class="btn btn-success btn-sm me-1">Approve</a>
+                        <a href="{{ url_for('reject', user_id=user.id) }}" class="btn btn-danger btn-sm">Reject</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -94,3 +94,224 @@ def login():
             return redirect(url_for('admin'))
 
     return render_template('login.html')
+
+
+
+@app.route('/admin')
+def admin():
+    count_students = User.query.filter_by(user_type='student', approval_status='approved').count()
+    count_companies = User.query.filter_by(user_type='company', approval_status='approved').count()
+    count_drives = Placement.query.count()
+    count_applications = Application.query.count()
+
+    if 'user_id' not in session or session.get('user_type') != 'admin':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+    return render_template('/admin/admin.html',count_students=count_students, count_companies=count_companies, count_drives=count_drives, count_applications=count_applications)
+
+@app.route('/admin/approval')
+def admin_approval():
+    pending_users = User.query.filter(User.approval_status == 'pending',User.user_type != 'admin').all()
+    return render_template('/admin/approvals.html', users=pending_users)
+
+@app.route('/approve/<int:user_id>')
+def approve(user_id):
+    user = User.query.get(user_id)
+    user.approval_status = 'approved'
+    db.session.commit()
+    flash('User approved successfully', 'success')
+    return redirect(url_for('admin_approval'))
+
+@app.route('/reject/<int:user_id>')
+def reject(user_id):
+    user = User.query.get(user_id)
+    user.approval_status = 'rejected'
+    db.session.commit()
+    flash('User rejected', 'danger')
+    return redirect(url_for('admin_approval'))
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('Logged out successfully', 'success')
+    return redirect(url_for('login'))
+
+
+
+@app.route('/admin/companies')
+def admin_companies():
+    companies = (
+        Company.query
+        .join(User, Company.user_id == User.id)
+        .filter(User.user_type == 'company', User.approval_status == 'approved')
+        .all()
+    )
+    return render_template('admin/company.html', companies=companies)
+
+@app.route('/admin/students')
+def admin_students():
+    students = (
+        Student.query
+        .join(User, Student.user_id == User.id)
+        .filter(User.user_type == 'student', User.approval_status == 'approved')
+        .all()
+    )
+    return render_template('admin/student.html', students=students)
+
+@app.route('/admin/company/deactivate/<int:id>')
+def deactivate_company(id):
+    user = User.query.get_or_404(id)   
+    user.is_blacklisted = True         
+    db.session.commit()
+    flash("Company blacklisted", "success")
+    return redirect(url_for('admin_companies'))
+
+
+@app.route('/admin/company/activate/<int:id>')
+def activate_company(id):
+    user = User.query.get_or_404(id)
+    user.is_blacklisted = False
+    db.session.commit()
+    flash("Company activated", "success")
+    return redirect(url_for('admin_companies'))
+
+@app.route('/admin/student/deactivate/<int:id>')
+def deactivate_student(id):
+    user = User.query.get_or_404(id)
+    user.is_blacklisted = True
+    db.session.commit()
+    flash("Student blacklisted", "success")
+    return redirect('/admin/students')
+
+@app.route('/admin/student/activate/<int:id>')
+def activate_student(id):
+    user = User.query.get(id)
+    user.is_blacklisted = False
+    flash("Student activated", "success")
+    db.session.commit()
+    return redirect('/admin/students') 
+
+@app.route('/admin/company/search')
+def admin_company_search():
+    search = request.args.get('search', '').strip()
+
+    query = (
+        Company.query
+        .join(User, Company.user_id == User.id)
+        .filter(User.user_type == 'company', User.approval_status == 'approved')
+    )
+
+    if search:
+        query = query.filter(or_(
+            Company.companyname.contains(search),
+            Company.hr_name.contains(search),
+            Company.hr_contact.contains(search),
+            User.email.contains(search),
+            cast(Company.user_id, String).contains(search)
+        ))
+
+    companies = query.all()
+    return render_template('admin/company.html', companies=companies)
+
+
+
+@app.route('/admin/student/search')
+def admin_student_search():
+    search = request.args.get('search')
+    query = (
+        Student.query
+        .join(User, Student.user_id == User.id)
+        .filter(
+            User.user_type == 'student',
+            User.approval_status == 'approved'
+        )
+    )
+    if search:
+        query = query.filter(
+            or_(
+                Student.studentname.contains(search),
+                Student.institution.contains(search),
+                User.email.contains(search),
+                cast(Student.user_id, String).contains(search)
+            )
+        )
+
+    students = query.all()
+    return render_template('admin/student.html', students=students)
+
+@app.route('/admin/placements')
+def admin_placements():
+    placements = Placement.query.all()
+    return render_template('admin/placement.html', placements=placements)
+
+@app.route('/admin/applications')
+def admin_applications():
+    search = request.args.get('search')
+
+    query = Application.query
+
+    if search:
+        query = (
+            query
+            .join(Student)
+            .join(User, Student.user_id == User.id)
+            .join(Placement)
+            .join(Company)
+            .filter(
+                or_(
+                    Student.studentname.contains(search),
+                    User.email.contains(search),
+                    Company.companyname.contains(search),
+                    Placement.role.contains(search)
+                )
+            )
+        )
+
+    applications = query.all()
+
+    return render_template('admin/application.html', applications=applications)
+
+@app.route('/admin/student/<int:id>')
+def admin_view_student(id):
+    student = (
+        Student.query
+        .join(User, Student.user_id == User.id)
+        .filter(User.id == id)
+        .first_or_404()
+    )
+
+    return render_template('student/profile.html', student=student)
+
+@app.route('/admin/placement/search')
+def admin_placement_search():
+    search = request.args.get('search')
+
+    if search:
+        students = User.query.filter(
+            User.user_type == 'student',
+            User.approval_status == 'approved',
+            (
+            (User.email.contains(search)) |
+            (User.id == search)
+        )).all()
+    else:
+        students = User.query.filter_by(user_type='student', approval_status='approved').all()
+
+    return render_template('/admin/placement.html', students=students)
+
+@app.route('/admin/placement/<int:id>/approve')
+def approve_placement(id):
+    placement = Placement.query.get_or_404(id)
+    placement.approval_status = 'approved'
+    db.session.commit()
+    flash('Placement approved', 'success')
+    return redirect(url_for('admin_placements'))
+
+
+@app.route('/admin/placement/<int:id>/reject')
+def reject_placement(id):
+    placement = Placement.query.get_or_404(id)
+    placement.approval_status = 'rejected'
+    db.session.commit()
+    flash('Placement rejected', 'warning')
+    return redirect(url_for('admin_placements'))

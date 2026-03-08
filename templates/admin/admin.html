@@ -1,0 +1,43 @@
+{% extends "index.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Admin Dashboard</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Total Students</h5>
+                    <p class="card-text display-6 text-center">{{ count_students }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Total Companies</h5>
+                    <p class="card-text display-6 text-center">{{ count_companies }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Total Placement drives</h5>
+                    <p class="card-text display-6 text-center">{{ count_drives }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Total Applications</h5>
+                    <p class="card-text display-6 text-center">{{ count_applications }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
