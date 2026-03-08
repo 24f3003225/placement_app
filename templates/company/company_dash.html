@@ -1,0 +1,127 @@
+{% extends "index.html" %}
+{% block title %}Company Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h3 class="text-center mb-4">
+        Welcome, {{ company.companyname }}
+    </h3>
+
+    <div class="row text-center mb-4">
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Jobs Posted</h5>
+                    <h2>{{ placements|length }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Applications Received</h5>
+                    <h2>{{ applications|length }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Company Status</h5>
+
+                    {% if not company.user.is_blacklisted %}
+                    <h6 class="text-success">Active</h6>
+                    {% else %}
+                    <h6 class="text-danger">Blacklisted</h6>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            Posted Jobs / Placement Drives
+        </div>
+        <div class="card-body">
+
+            {% if placements %}
+            <table class="table table-bordered">
+                <tr>
+                    <th>ID</th>
+                    <th>Role</th>
+                    <th>Deadline</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+
+                {% for p in placements %}
+                <tr>
+                    <td>{{ p.id }}</td>
+                    <td>{{ p.role }}</td>
+                    <td>{{ p.application_deadline }}</td>
+                    <td>
+                        {% if p.status == 'active' %}
+                        <span class="text-success">Active</span>
+                        {% else %}
+                        <span class="text-danger">Closed</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if p.status == 'active' %}
+                        <a href="{{ url_for('close_job', id=p.id) }}" class="btn btn-sm btn-danger">
+                            Close
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('activate_job', id=p.id) }}" class="btn btn-sm btn-success">
+                            Activate
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <p class="text-center">No jobs posted yet</p>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            Applications Received
+        </div>
+        <div class="card-body">
+
+            {% if applications %}
+            <table class="table table-bordered">
+                <tr>
+                    <th>Student</th>
+                    <th>Job Role</th>
+                    <th>Status</th>
+                    <th>Applied On</th>
+                </tr>
+                {% for a in applications %}
+                <tr>
+                    <td>{{ a.student.studentname }}</td>
+                    <td>{{ a.placement.role }}</td>
+                    <td>{{ a.status }}</td>
+                    <td>{{ a.application_date }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <p class="text-center">No applications received</p>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

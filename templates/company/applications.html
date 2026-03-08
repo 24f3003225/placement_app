@@ -1,0 +1,65 @@
+{% extends "index.html" %}
+{% block title %}Company Dashboard{% endblock %}
+
+{% block content %}
+<h3 class="text-center">Student Applications</h3>
+<div style="width: 1200px; margin: 60px auto; padding: 20px;">
+    <table class="table table-bordered text-center">
+        <tr>
+            <th>Student</th>
+            <th>Job Role</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+
+        {% for app in applications %}
+        <tr>
+            <td>{{ app.student.user.studentname }}</td>
+            <td>{{ app.placement.role }}</td>
+            <td>{{ app.status }}</td>
+            <td>
+                {% if app.status == 'applied' %}
+                <a href="{{ url_for('shortlist_student', id=app.id) }}" class="btn btn-success btn-sm">
+                    Shortlist
+                </a>
+                <a href="{{ url_for('reject_student', id=app.id) }}" class="btn btn-danger btn-sm">
+                    Reject
+                </a>
+                {% else %}
+                —
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<h3 class="text-center">Shortlisted Students</h3>
+<div style="width: 1200px; margin: 60px auto; padding: 20px;">
+    <table class="table table-bordered text-center">
+        <tr>
+            <th>Student</th>
+            <th>Job Role</th>
+            <th>Student Profile</th>
+            <th>Resume</th>
+        </tr>
+
+        {% for app in shortlisted_applications %}
+        <tr>
+            <td>{{ app.student.user.studentname }}</td>
+            <td>{{ app.placement.role }}</td>
+            <td>
+                <a href="{{ url_for('student_profile', user_id=app.student.user.id) }}" class="btn btn-primary btn-sm">
+                    Profile
+                </a>
+            </td>
+            <td>
+                <a href="{{ app.student.resume_link }}" target="_blank" class="btn btn-success btn-sm">
+                    Resume
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

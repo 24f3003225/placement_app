@@ -315,3 +315,122 @@ def reject_placement(id):
     db.session.commit()
     flash('Placement rejected', 'warning')
     return redirect(url_for('admin_placements'))
+
+@app.route('/company/dashboard')
+def company_dashboard():
+    if 'user_id' not in session or session.get('user_type') != 'company':
+        flash('Unauthorized access', 'danger')
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+    
+    company = Company.query.filter_by(user_id=user_id).first()
+    placements = Placement.query.filter_by(company_id=company.user_id).all()
+    applications = Application.query.join(Placement).filter(Placement.company_id == user_id).all()
+    return render_template('company/company_dash.html', company=company, placements=placements, applications=applications)
+
+@app.route('/company/profile', methods=['GET', 'POST'])
+def company_profile():
+    if 'user_id' not in session or session.get('user_type') != 'company':
+        return redirect(url_for('login'))
+
+    company = Company.query.filter_by(user_id=session['user_id']).first_or_404()
+    user = User.query.get_or_404(session['user_id'])
+
+    if request.method == 'POST':
+        company.companyname = request.form.get('companyname')
+        company.hr_name = request.form.get('hr_name')
+        company.hr_contact = request.form.get('hr_contact')
+
+        # optional: allow email edit
+        user.email = request.form.get('email')
+
+        db.session.commit()
+        flash('Company profile updated', 'success')
+        return redirect(url_for('company_profile'))
+
+    return render_template('company/profile.html', company=company, user=user)
+
+@app.route('/company/job/new', methods=['GET', 'POST'])
+def post_job():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        job = Placement(
+            role=request.form.get('role'),
+            eligibility=request.form.get('eligibility'),
+            description=request.form.get('description'),
+            salary=request.form.get('salary'),
+            skills=request.form.get('skills'),
+            company_id=session['user_id'],
+            status='open'
+        )
+
+        db.session.add(job)
+        db.session.commit()
+
+        flash('Job posted successfully', 'success')
+        return redirect(url_for('company_dashboard'))
+
+    return render_template('company/post.html')
+
+@app.route('/company/job/close/<int:id>')
+def close_job(id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    job = Placement.query.get_or_404(id)
+    job.status = 'closed'
+    db.session.commit()
+    return redirect(url_for('company_dashboard'))
+
+
+@app.route('/company/job/activate/<int:id>')
+def activate_job(id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    job = Placement.query.get_or_404(id)
+    job.status = 'active'
+    db.session.commit()
+    return redirect(url_for('company_dashboard'))
+
+@app.route('/company/applications')
+def view_applications():
+    all_applications = (
+        Application.query
+        .join(Placement)
+        .filter(Placement.company_id == session['user_id'])
+        .all()
+    )
+
+    shortlisted_applications = (
+        Application.query
+        .join(Placement)
+        .filter(
+            Placement.company_id == session['user_id'],
+            Application.status == 'shortlisted'
+        )
+        .all()
+    )
+
+    return render_template(
+        'company/applications.html',
+        applications=all_applications,
+        shortlisted_applications=shortlisted_applications
+    )
+
+@app.route('/application/shortlist/<int:id>')
+def shortlist_student(id):
+    application = Application.query.get_or_404(id)
+    application.status = 'shortlisted'
+    db.session.commit()
+    return redirect(request.referrer)
+
+@app.route('/application/reject/<int:id>')
+def reject_student(id):
+    application = Application.query.get_or_404(id)
+    application.status = 'rejected'
+    db.session.commit()
+    return redirect(request.referrer)

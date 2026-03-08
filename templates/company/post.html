@@ -1,0 +1,50 @@
+{% extends "index.html" %}
+{% block title %}Company Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+
+    <div style="width: 600px;">
+
+        <h3 class="text-center mb-4 fw-bold">Post New Job</h3>
+
+        <form method="post">
+
+            <div class="mb-3">
+                <input type="text" name="company_id" class="form-control form-control-lg" placeholder="Company ID"
+                    required>
+            </div>
+
+            <div class="mb-3">
+                <input type="text" name="role" class="form-control form-control-lg" placeholder="Job Role" required>
+            </div>
+
+            <div class="mb-3">
+                <input type="text" name="skills" class="form-control form-control-lg" placeholder="Required Skills"
+                    required>
+            </div>
+
+            <div class="mb-3">
+                <input type="text" name="salary" class="form-control form-control-lg" placeholder="Salary Range"
+                    required>
+            </div>
+
+            <div class="mb-3">
+                <input type="text" name="eligibility" class="form-control form-control-lg"
+                    placeholder="Eligibility (CGPA / Branch)" required>
+            </div>
+
+            <div class="mb-4">
+                <textarea name="description" class="form-control form-control-lg" rows="4"
+                    placeholder="Job Description"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success btn-lg w-100">
+                Post Job
+            </button>
+
+        </form>
+    </div>
+
+</div>
+{% endblock %}
