@@ -1,0 +1,47 @@
+{% extends "index.html" %}
+
+{% block title %}Home | Placement Portal{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Welcome to the Placement Portal</h2>
+        <p class="text-muted">
+            A simple platform that connects students, companies, and administrators for smooth placement activities.
+        </p>
+    </div>
+
+    <div class="row text-center">
+
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body">
+                    <h5 class="card-title">Students</h5>
+                    <p class="text-muted">
+                        Explore job opportunities, apply for positions, and track your application progress.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body">
+                    <h5 class="card-title">Companies</h5>
+                    <p class="text-muted">
+                        Post job openings, review applicants, and shortlist talented candidates.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="/login" class="btn btn-primary">Login</a>
+        <a href="/register" class="btn btn-outline-primary">Register</a>
+    </div>
+
+</div>
+{% endblock %}

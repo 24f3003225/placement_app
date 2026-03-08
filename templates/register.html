@@ -1,0 +1,88 @@
+{% extends "index.html" %}
+{% block title %}Register - placement portal{% endblock %}
+
+{% block content %}
+<h2>REGISTRATION</h2>
+<form method="POST" action="/register">
+    <label class="form-label">Name</label>
+    <input type="text" name="name" class="form-control" required><br>
+
+    <label class="form-label">Email</label>
+    <input type="email" name="email" class="form-control" required><br>
+
+    <label class="form-label">Password</label>
+    <input type="password" name="password" class="form-control" required><br>
+
+    <label class="form-label">Register As</label><br>
+
+    <input type="radio" name="role" value="student" required onclick="showFields()">
+    <label>Student</label><br>
+
+    <input type="radio" name="role" value="company" required onclick="showFields()">
+    <label>Company</label><br><br>
+
+    <div id="student_fields" style="display:none;">
+        <label class="form-label">Institution</label>
+        <input type="text" name="institution" class="form-control"><br>
+
+        <label class="form-label">Course</label>
+        <input type="text" name="course" class="form-control"><br>
+
+        <label class="form-label">Year of Study</label>
+        <input type="number" name="year_of_study" class="form-control"><br>
+
+        <label class="form-label">Resume Link</label>
+        <input type="text" name="resume_link" class="form-control"><br>
+
+        <label class="form-label">CGPA</label>
+        <input type="number" step="0.01" name="cgpa" class="form-control"><br>
+    </div>
+
+    <div id="company_fields" style="display:none;">
+        <label class="form-label">Company Name</label>
+        <input type="text" name="companyname" class="form-control"><br>
+
+        <label class="form-label">HR Name</label>
+        <input type="text" name="hr_name" class="form-control"><br>
+
+        <label class="form-label">HR Contact</label>
+        <input type="text" name="hr_contact" class="form-control"><br>
+    </div>
+
+    <input type="submit" value="Register" class="btn btn-primary">
+</form>
+
+<script>
+    function showFields() {
+        let role = document.querySelector('input[name="role"]:checked').value;
+
+        if (role == "student") {
+            document.getElementById("student_fields").style.display = "block";
+            document.getElementById("company_fields").style.display = "none";
+        }
+        else if (role == "company") {
+            document.getElementById("student_fields").style.display = "none";
+            document.getElementById("company_fields").style.display = "block";
+        }
+    }
+</script>
+{% endblock %}
+
+{% block style %}
+<style>
+    body {
+        background-color: #ffffff;
+        padding-top: 0px;
+    }
+
+    form {
+        max-width: 400px;
+        margin: auto;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}

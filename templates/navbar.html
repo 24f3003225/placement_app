@@ -1,0 +1,88 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('home') }}">PLACEMENT PORTAL</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+
+                {% if not session.get('role') %}
+
+                <!-- PUBLIC (NOT LOGGED IN) -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+                </li>
+
+                {% elif session['role'] == 'student' %}
+                <!-- STUDENT -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('student_dash') }}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('student_profile') }}">Student profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('student_jobs') }}">Jobs</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('student_applied') }}">Applied Jobs</a>
+                </li>
+
+                {% elif session['role'] == 'company' %}
+                <!-- COMPANY -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('company_dashboard') }}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('company_profile') }}">Company profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('post_job') }}">Create Drive</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('view_applications') }}">Applicants</a>
+                </li>
+
+                {% elif session['role'] == 'admin' %}
+                <!-- ADMIN -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin') }}">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_approval') }}">Pending Approvals</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_companies') }}">Manage Companies</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_students') }}">Manage Students</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_placements') }}">Manage Placements</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin_applications') }}">Manage Applications</a>
+                </li>
+                {% endif %}
+
+                {% if session.get('role') %}
+                <!-- LOGOUT -->
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+                {% endif %}
+
+            </ul>
+        </div>
+    </div>
+</nav>
