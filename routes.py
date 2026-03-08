@@ -539,7 +539,6 @@ def student_applied():
     if 'user_id' not in session or session.get('user_type') != 'student':
         flash('Unauthorized access', 'danger')
         return redirect(url_for('login'))
-        student = Student.query.filter_by(user_id=session['user_id']).first()
 
     applications = Application.query.filter_by(
         student_id=Student.user_id).all()
