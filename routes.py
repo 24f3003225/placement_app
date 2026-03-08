@@ -397,45 +397,73 @@ def activate_job(id):
     return redirect(url_for('company_dashboard'))
 
 @app.route('/company/applications')
-def view_applications():
-    all_applications = (
-        Application.query
-        .join(Placement)
-        .filter(Placement.company_id == session['user_id'])
-        .all()
-    )
+def company_applications():
+    if 'user_id' not in session or session.get('user_type') != 'company':
+        return redirect(url_for('login'))
 
-    shortlisted_applications = (
-        Application.query
-        .join(Placement)
-        .filter(
-            Placement.company_id == session['user_id'],
-            Application.status == 'shortlisted'
-        )
-        .all()
-    )
+    company_id = session['user_id']
+
+    applications = Application.query.join(Placement).filter(
+        Placement.company_id == company_id
+    ).all()
+
+    placed_applications = Application.query.join(Placement).filter(
+        Placement.company_id == company_id,
+        Application.status == 'placed'
+    ).all()
 
     return render_template(
         'company/applications.html',
-        applications=all_applications,
-        shortlisted_applications=shortlisted_applications
+        applications=applications,
+        placed_applications=placed_applications
     )
 
-@app.route('/application/shortlist/<int:id>')
+@app.route('/company/application/<int:id>/shortlist')
 def shortlist_student(id):
     application = Application.query.get_or_404(id)
+
     application.status = 'shortlisted'
     db.session.commit()
-    return redirect(request.referrer)
 
-@app.route('/application/reject/<int:id>')
+    return redirect(url_for('company_applications'))
+
+@app.route('/company/application/<int:id>/interview')
+def interview_student(id):
+    application = Application.query.get_or_404(id)
+
+    application.status = 'interview'
+    db.session.commit()
+
+    return redirect(url_for('company_applications'))
+
+@app.route('/company/application/<int:id>/place')
+def place_student(id):
+    application = Application.query.get_or_404(id)
+
+    application.status = 'placed'
+
+    history = PlacementHistory(
+        student_id=application.student_id,
+        company_id=application.placement.company_id,
+        placement_id=application.placement_id,
+        skills=application.placement.skills,
+        role=application.placement.role,
+        salary=application.placement.salary
+    )
+
+    db.session.add(history)
+    db.session.commit()
+
+    return redirect(url_for('company_applications'))
+
+@app.route('/company/application/<int:id>/reject')
 def reject_student(id):
     application = Application.query.get_or_404(id)
+
     application.status = 'rejected'
     db.session.commit()
-    return redirect(request.referrer)
 
-
+    return redirect(url_for('company_applications'))
 
 @app.route('/student/dashboard')
 def student_dash():
