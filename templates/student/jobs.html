@@ -1,0 +1,56 @@
+{% extends "index.html" %}
+{% block title %}Available Jobs{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h3 class="text-center mb-4">Available Jobs</h3>
+
+    <table class="table table-bordered table-hover text-center align-middle">
+        <thead>
+            <tr>
+                <th>Company</th>
+                <th>Role</th>
+                <th>Salary</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for job in placements %}
+            <tr>
+                <td>{{ job.company.companyname }}</td>
+                <td>{{ job.role }}</td>
+                <td>{{ job.salary }}</td>
+
+                <td>
+                    {% if job.status == 'active' %}
+                    <span class="badge bg-success px-3 py-2">Active</span>
+                    {% else %}
+                    <span class="badge bg-danger px-3 py-2">Closed</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if job.status == 'active' %}
+                    <a href="{{ url_for('apply_job', placement_id=job.id) }}" class="btn btn-primary btn-sm">
+                        Apply
+                    </a>
+                    {% else %}
+                    <button class="btn btn-secondary btn-sm" disabled>
+                        Closed
+                    </button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+</div>
+
+{% endblock %}

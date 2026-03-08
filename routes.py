@@ -434,3 +434,117 @@ def reject_student(id):
     application.status = 'rejected'
     db.session.commit()
     return redirect(request.referrer)
+
+
+
+@app.route('/student/dashboard')
+def student_dash():
+
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+
+    student_id = session['user_id']
+
+    applications = Application.query.filter_by(student_id=student_id).all()
+
+    total_applied = len(applications)
+    shortlisted = len([a for a in applications if a.status == 'shortlisted'])
+    waitlisted = len([a for a in applications if a.status == 'waitlisted'])
+    rejected = len([a for a in applications if a.status == 'rejected'])
+
+    return render_template(
+        '/student/dash.html',
+        total_applied=total_applied,
+        shortlisted=shortlisted,
+        waitlisted=waitlisted,
+        rejected=rejected
+    )
+  
+@app.route('/student/profile', methods=['GET', 'POST'])
+def student_profile():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        return redirect(url_for('login'))
+
+    student = Student.query.filter_by(user_id=session['user_id']).first()
+    user = User.query.get(session['user_id'])
+
+    if request.method == 'POST':
+        student.studentname = request.form.get('studentname')
+        student.institution = request.form.get('institution')
+        student.course = request.form.get('course')
+        student.year_of_study = request.form.get('year_of_study')
+        student.cgpa = request.form.get('cgpa')
+        student.resume_link = request.form.get('resume_link')
+        user.email = request.form.get('email')
+
+        db.session.commit()
+        flash('Profile updated', 'success')
+        return redirect(url_for('student_profile'))
+
+    return render_template('student/profile.html', student=student, user=user)
+
+@app.route('/student/apply/<int:placement_id>', methods=['GET', 'POST'])
+def apply_job(placement_id):
+
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+
+    placement = Placement.query.get_or_404(placement_id)
+
+    if request.method == 'POST':
+        resume = request.form['resume']
+
+        existing = Application.query.filter_by(
+            student_id=session['user_id'],
+            placement_id=placement_id
+        ).first()
+
+        if existing:
+            flash("You already applied for this job!", "warning")
+            return redirect(url_for('student_jobs'))
+
+        new_application = Application(
+            student_id=session['user_id'],
+            placement_id=placement_id,
+            resume=resume,
+            status='applied'
+        )
+
+        db.session.add(new_application)
+        db.session.commit()
+
+        flash("Application submitted successfully!", "success")
+        return redirect(url_for('student_applied'))
+
+    return render_template('student/apply_form.html', placement=placement)
+
+@app.route('/student/jobs')
+def student_jobs():
+
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+
+    placements = Placement.query.filter_by(approval_status='approved').all()
+
+    return render_template(
+        'student/jobs.html',
+        placements=placements
+    )
+
+@app.route('/student/applied')
+def student_applied():
+    if 'user_id' not in session or session.get('user_type') != 'student':
+        flash('Unauthorized access', 'danger')
+        return redirect(url_for('login'))
+        student = Student.query.filter_by(user_id=session['user_id']).first()
+
+    applications = Application.query.filter_by(
+        student_id=Student.user_id).all()
+
+    return render_template(
+        'student/applied_jobs.html',
+        applications=applications
+    )

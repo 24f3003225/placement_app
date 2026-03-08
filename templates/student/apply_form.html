@@ -1,0 +1,36 @@
+{% extends "index.html" %}
+{% block title %}Apply Job{% endblock %}
+
+{% block content %}
+
+<div style="width: 400px; margin: 60px auto; padding: 20px; border: 1px solid #f1dede; border-radius: 6px;">
+
+    <h3 style="text-align: center;">Apply for {{ placement.role }}</h3>
+    <p style="text-align: center; font-size: 14px;">
+        Company: {{ placement.company.companyname }}
+    </p>
+
+    <form method="POST">
+
+        <div style="margin-bottom: 15px;">
+            <label>Resume Link</label><br>
+            <input type="text" name="resume" style="width: 100%; padding: 6px;" placeholder="Paste your resume link"
+                required>
+        </div>
+
+        <div style="text-align: center;">
+            <button type="submit"
+                style="padding: 6px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px;">
+                Submit
+            </button>
+
+            <a href="{{ url_for('student_jobs') }}" style="margin-left: 10px; text-decoration: none;">
+                Cancel
+            </a>
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

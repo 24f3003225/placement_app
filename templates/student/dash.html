@@ -1,0 +1,44 @@
+{% extends "index.html" %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <h4 class="mb-4">Welcome Student</h4>
+
+    <!-- Summary Cards -->
+    <div class="row text-center mb-4">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h6>Total Applied</h6>
+                <h4>{{ total_applied }}</h4>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h6>Shortlisted</h6>
+                <h4 class="text-success">{{ shortlisted }}</h4>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h6>Waitlisted</h6>
+                <h4 class="text-warning">{{ waitlisted }}</h4>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h6>Rejected</h6>
+                <h4 class="text-danger">{{ rejected }}</h4>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

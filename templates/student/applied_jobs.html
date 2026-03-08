@@ -1,0 +1,33 @@
+{% extends "index.html" %}
+{% block title %}Applied Jobs{% endblock %}
+
+{% block content %}
+<div style="width: 1200px; margin: 60px auto; padding: 20px;">
+    <h5 class="mb-3">My Applications</h5>
+    <table class="table table-bordered table-striped">
+        <tr>
+            <th>Company</th>
+            <th>Role</th>
+            <th>Status</th>
+        </tr>
+
+        {% for app in applications %}
+        <tr>
+            <td>{{ app.placement.company.companyname }}</td>
+            <td>{{ app.placement.role }}</td>
+            <td>
+                <span class="badge
+                    {% if app.status == 'shortlisted' %} bg-success
+                    {% elif app.status == 'rejected' %} bg-danger
+                    {% elif app.status == 'waitlisted' %} bg-warning
+                    {% else %} bg-secondary {% endif %}
+                ">
+                    {{ app.status.capitalize() }}
+                </span>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+{% endblock %}
