@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import db, User, Student, Company ,Placement, Application
+from models import PlacementHistory, db, User, Student, Company ,Placement, Application
 from datetime import datetime
 from app import app
 from sqlalchemy import or_, cast
