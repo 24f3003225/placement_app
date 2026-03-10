@@ -1,0 +1,55 @@
+{% extends "index.html" %}
+{% block title %}Student Profile{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5" style="max-width:700px">
+
+    <h3 class="text-center mb-4">Student Profile</h3>
+
+    <table class="table table-bordered">
+
+        <tr>
+            <th>Name</th>
+            <td>{{ student.studentname }}</td>
+        </tr>
+
+        <tr>
+            <th>Email</th>
+            <td>{{ user.email }}</td>
+        </tr>
+
+        <tr>
+            <th>Institution</th>
+            <td>{{ student.institution }}</td>
+        </tr>
+
+        <tr>
+            <th>Course</th>
+            <td>{{ student.course }}</td>
+        </tr>
+
+        <tr>
+            <th>Year of Study</th>
+            <td>{{ student.year_of_study }}</td>
+        </tr>
+
+        <tr>
+            <th>CGPA</th>
+            <td>{{ student.cgpa }}</td>
+        </tr>
+
+        <tr>
+            <th>Resume</th>
+            <td>
+                <a href="{{ student.resume_link }}" target="_blank" class="btn btn-success btn-sm">
+                    View Resume
+                </a>
+            </td>
+        </tr>
+
+    </table>
+
+</div>
+
+{% endblock %}

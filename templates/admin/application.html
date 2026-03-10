@@ -36,9 +36,9 @@
             <td>{{ app.status }}</td>
             <td>{{ app.application_date }}</td>
             <td>
-                <a href="{{ url_for('admin_view_student', id=app.student.user_id) }}"
-                    class="btn btn-outline-primary btn-sm">
-                    View Profile
+                <a href="{{ url_for('view_student_profile', user_id=app.student.user_id) }}"
+                    class="btn btn-primary btn-sm">
+                    Profile
                 </a>
             </td>
         </tr>

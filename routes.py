@@ -465,6 +465,25 @@ def reject_student(id):
 
     return redirect(url_for('company_applications'))
 
+@app.route('/student/view/<int:user_id>')
+def view_student_profile(user_id):
+
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    student = Student.query.filter_by(user_id=user_id).first()
+    user = User.query.get(user_id)
+
+    if not student:
+        flash("Student profile not found", "danger")
+        return redirect(request.referrer)
+
+    return render_template(
+        'student/view_profile.html',
+        student=student,
+        user=user
+    )
+
 @app.route('/student/dashboard')
 def student_dash():
 
@@ -568,8 +587,11 @@ def student_applied():
         flash('Unauthorized access', 'danger')
         return redirect(url_for('login'))
 
+    student_id = session['user_id']
+
     applications = Application.query.filter_by(
-        student_id=Student.user_id).all()
+        student_id=student_id
+    ).all()
 
     return render_template(
         'student/applied_jobs.html',
